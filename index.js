@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 
+app.use(express.json())
+
 let contacts = [
     { 
         "name": "Arto Hellas", 
@@ -22,11 +24,6 @@ let contacts = [
         "number": "39-23-6423122",
         "id": 4
     },
-    { 
-        "name": "Mary Poppendieck", 
-        "number": "39-23-6423122",
-        "id": 5
-    }
 ]
 
 app.get('/', (req, res) => {
@@ -57,6 +54,33 @@ app.delete('/api/persons/:id', (req, res) => {
     contacts = contacts.filter(p => p.id !== id)
 
     res.status(204).end()
+})
+
+const generateID = parseInt(Math.random() * 50000)
+
+app.post('/api/persons', (req, res) => {
+
+    const body = req.body
+
+    if  (!body.content) {
+        return res.status(400).json('Name is missing')
+    }
+    if  (!body.number) {
+        return res.status(400).json('Number is missing')
+    }
+    if  (contacts.some(p => 
+        p.name === body.content)) {
+        return res.status(400).json('Name alreay exists')
+    }
+    
+    const person = {
+        content : body.content,
+        number : body.number,
+        id : generateID
+    }
+
+    contacts = contacts.concat(person)
+    res.json(contacts)
 })
 
 

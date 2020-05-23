@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 
-const contacts = [
+let contacts = [
     { 
         "name": "Arto Hellas", 
         "number": "040-123456",
@@ -21,6 +21,11 @@ const contacts = [
         "name": "Mary Poppendieck", 
         "number": "39-23-6423122",
         "id": 4
+    },
+    { 
+        "name": "Mary Poppendieck", 
+        "number": "39-23-6423122",
+        "id": 5
     }
 ]
 
@@ -38,7 +43,6 @@ app.get('/info', (req, res) => {
 })
 
 app.get('/api/persons/:id', (req, res) => {
-    console.log(req.params)
     const id = Number(req.params.id)
     const note = contacts.find(note => note.id === id)
     if  (note) {
@@ -47,6 +51,14 @@ app.get('/api/persons/:id', (req, res) => {
         res.status(404).end()
     }
 }) 
+
+app.delete('/api/persons/:id', (req, res) => {
+    const id = Number(req.params.id)
+    contacts = contacts.filter(p => p.id !== id)
+
+    res.status(204).end()
+})
+
 
 const port = 3001
 app.listen(port, () => {

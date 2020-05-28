@@ -1,36 +1,28 @@
+require('dotenv').config()
 const mongo = require('mongoose')
+const url = process.env.MONGOURL
 
-if (process.argv.length < 3) {
-    console.log('No password was supplied')
-    process.exit(1)
-}
-
-const password = process.argv[2]
-const url = `mongodb+srv://helios:${password}@cluster0-z0nly.mongodb.net/persons?retryWrites=true&w=majority`
+console.log('connecting to ', url)
 
 mongo.connect(url, {useNewUrlParser: true, useUnifiedTopology: true})
+    .then(result => {
+        console.log('connected to DB')
+    })
+    .catch((error) => {
+        console.log('error connecting to DB' , error.message)
+    })
 
 const contactSchema = new mongo.Schema({
-    content: String,
+    name: String,
     number: String,
 })
 
-const Person = mongo.model('Person', contactSchema)
-
-const person = new Person({
-    content: process.argv[3],
-    number: process.argv[4]
+contactSchema.set('toJSON', {
+    transform: (document, returnedObject) => {
+        returnedObject.id = returnedObject._id.toString()
+        delete returnedObject._id
+        delete returnedObject.__v
+    }
 })
 
-person.save().then(result => {
-    console.log('contact saved!')
-    mongo.connection.close()
-})
-
-Person.find({}).then(result => {
-    console.log('Phonebook:')
-    result.forEach(element => {
-        console.log(`${element.content} ${element.number}`)        
-    })
-    mongo.connection.close()
-})
+module.exports = mongo.model('Person', contactSchema)

@@ -8,6 +8,7 @@ console.log('connecting to ', url)
 mongoose.connect(url, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useFindAndModify: false,
     useCreateIndex: true })
     .then(result => {
         console.log('connected to DB')
@@ -19,7 +20,7 @@ mongoose.connect(url, {
 const contactSchema = new mongoose.Schema({
     name: {
         type: String,
-        minlength: 1,
+        minlength: 3,
         maxlength: 30,
         trim: true,
         required: true,
@@ -28,9 +29,10 @@ const contactSchema = new mongoose.Schema({
     },
     number: {
         type: String,
-        maxlength: 15,
-        minlength: 2,
+        maxlength: 16,
+        minlength: 8,
         required: true,
+        trim: true
     }
 })
 
